@@ -9,6 +9,7 @@ import (
 	"github.com/knadh/koanf/providers/env"
 	"github.com/knadh/koanf/providers/file"
 	"github.com/knadh/koanf/providers/structs"
+	"github.com/snapp-incubator/mqtt-blackbox-exporter/internal/logger"
 	telemetry "github.com/snapp-incubator/mqtt-blackbox-exporter/internal/telemetry/config"
 )
 
@@ -23,6 +24,7 @@ type (
 	// Config holds all configurations.
 	Config struct {
 		Telemetry telemetry.Config `koanf:"telemetry"`
+		Logger    logger.Config    `koanf:"logger"`
 	}
 )
 

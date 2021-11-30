@@ -1,10 +1,16 @@
 package config
 
-import telemetry "github.com/snapp-incubator/mqtt-blackbox-exporter/internal/telemetry/config"
+import (
+	"github.com/snapp-incubator/mqtt-blackbox-exporter/internal/logger"
+	telemetry "github.com/snapp-incubator/mqtt-blackbox-exporter/internal/telemetry/config"
+)
 
 // Default return default configuration.
 func Default() Config {
 	return Config{
+		Logger: logger.Config{
+			Level: "debug",
+		},
 		Telemetry: telemetry.Config{
 			Trace: telemetry.Trace{
 				Enabled: false,
