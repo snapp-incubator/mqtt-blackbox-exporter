@@ -1,6 +1,6 @@
 package config
 
-import telemetry "github.com/snapp-incubator/mqtt-blackbox-exporter/telemetry/config"
+import telemetry "github.com/snapp-incubator/mqtt-blackbox-exporter/internal/telemetry/config"
 
 // Default return default configuration.
 func Default() Config {
