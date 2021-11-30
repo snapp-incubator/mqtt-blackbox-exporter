@@ -20,13 +20,16 @@ func Execute() {
 
 	logger := logger.New(cfg.Logger)
 
-	_ = trace.New(cfg.Telemetry.Trace)
+	tracer := trace.New(cfg.Telemetry.Trace)
 	metric.NewServer(cfg.Telemetry.Metric).Start(logger.Named("metric"))
 
 	// nolint: exhaustivestruct
 	root := &cobra.Command{
 		Use:   "mqtt-blackbox-exporter",
 		Short: "ping pong with mqtt broker",
+		Run: func(cmd *cobra.Command, args []string) {
+			main(cfg, logger, tracer)
+		},
 	}
 
 	if err := root.Execute(); err != nil {
