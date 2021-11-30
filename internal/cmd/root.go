@@ -4,6 +4,8 @@ import (
 	"os"
 
 	"github.com/snapp-incubator/mqtt-blackbox-exporter/internal/config"
+	"github.com/snapp-incubator/mqtt-blackbox-exporter/internal/logger"
+	"github.com/snapp-incubator/mqtt-blackbox-exporter/internal/telemetry/metric"
 	"github.com/snapp-incubator/mqtt-blackbox-exporter/internal/telemetry/trace"
 	"github.com/spf13/cobra"
 )
@@ -16,7 +18,10 @@ const ExitFailure = 1
 func Execute() {
 	cfg := config.New()
 
+	logger := logger.New(cfg.Logger)
+
 	_ = trace.New(cfg.Telemetry.Trace)
+	metric.NewServer(cfg.Telemetry.Metric).Start(logger.Named("metric"))
 
 	// nolint: exhaustivestruct
 	root := &cobra.Command{
