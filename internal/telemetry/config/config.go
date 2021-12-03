@@ -1,9 +1,9 @@
 package config
 
 type Config struct {
-	Trace    `koanf:"trace"`
-	Profiler `koanf:"profiler"`
-	Metric   `koanf:"metric"`
+	Trace    Trace    `koanf:"trace"`
+	Profiler Profiler `koanf:"profiler"`
+	Metric   Metric   `koanf:"metric"`
 }
 
 type Trace struct {

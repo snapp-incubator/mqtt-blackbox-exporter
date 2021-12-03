@@ -44,6 +44,6 @@ func Default() Config {
 			QoS:           1,
 			Retained:      true,
 		},
-		PingDuration: 60 * time.Second,
+		PingDuration: 1 * time.Second,
 	}
 }

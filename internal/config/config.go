@@ -22,8 +22,6 @@ const (
 )
 
 type (
-	Type string
-
 	// Config holds all configurations.
 	Config struct {
 		Telemetry    telemetry.Config `koanf:"telemetry"`
@@ -62,12 +60,12 @@ func New() Config {
 	}
 
 	indent, _ := json.MarshalIndent(instance, "", "\t")
-	cfgStrTemplate := `
+	tmpl := `
 	================ Loaded Configuration ================
 	%s
 	======================================================
 	`
-	log.Printf(cfgStrTemplate, string(indent))
+	log.Printf(tmpl, string(indent))
 
 	return instance
 }
