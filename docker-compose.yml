@@ -1,0 +1,10 @@
+---
+services:
+  broker:
+    image: emqx/emqx:latest
+    environment:
+      EMQX_NAME: instance-1
+      EMQX_LOADED_PLUGINS: "emqx_management,emqx_dashboard"
+    ports:
+      - 1883:1883
+      - 18083:18083
