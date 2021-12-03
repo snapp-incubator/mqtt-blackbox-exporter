@@ -13,6 +13,7 @@ import (
 	"go.opentelemetry.io/otel/trace"
 )
 
+// nolint: ireturn
 func New(cfg config.Trace) trace.Tracer {
 	if !cfg.Enabled {
 		return trace.NewNoopTracerProvider().Tracer("snapp/mqtt-blackbox-exporter")
