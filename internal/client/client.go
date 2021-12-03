@@ -15,15 +15,15 @@ const (
 
 // Client wraps mqtt client for handling publishing and subscribing.
 type Client struct {
-	Client mqtt.Client
-	Logger *zap.Logger
+	Client  mqtt.Client
+	Logger  *zap.Logger
+	Metrics Metrics
 }
 
 // New creates a new mqtt client with given configuration.
-// nolint: ireturn
-func New(cfg Config, logger *zap.Logger) mqtt.Client {
-	mqtt.DEBUG, _ = zap.NewStdLogAt(logger, zap.DebugLevel)
-	mqtt.ERROR, _ = zap.NewStdLogAt(logger, zap.ErrorLevel)
+func New(cfg Config, logger *zap.Logger) *Client {
+	mqtt.DEBUG, _ = zap.NewStdLogAt(logger.Named("raw"), zap.DebugLevel)
+	mqtt.ERROR, _ = zap.NewStdLogAt(logger.Named("raw"), zap.ErrorLevel)
 
 	opts := mqtt.NewClientOptions()
 
@@ -43,7 +43,19 @@ func New(cfg Config, logger *zap.Logger) mqtt.Client {
 
 	client := mqtt.NewClient(opts)
 
-	return client
+	return &Client{
+		Logger:  logger,
+		Client:  client,
+		Metrics: NewMetrics(),
+	}
+}
+
+func (c *Client) OnConnectionLostHandler(_ mqtt.Client, err error) {
+	c.Logger.Error("connection lost", zap.Error(err))
+	c.Metrics.ConnectionErrors.Add(1)
+}
+
+func (c *Client) OnConnectHandler() {
 }
 
 func (c *Client) Disconnect() {
@@ -52,6 +64,8 @@ func (c *Client) Disconnect() {
 
 func (c *Client) Connect() error {
 	if token := c.Client.Connect(); token.Wait() && token.Error() != nil {
+		c.Metrics.ConnectionErrors.Add(1)
+
 		return fmt.Errorf("mqtt connection failed %w", token.Error())
 	}
 
