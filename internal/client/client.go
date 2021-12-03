@@ -106,7 +106,7 @@ func (c *Client) Pong(_ mqtt.Client, b mqtt.Message) {
 	otel.GetTextMapPropagator().Extract(ctx, propagation.MapCarrier(msg.Headers))
 }
 
-func (c *Client) Ping() {
+func (c *Client) Ping() error {
 	var msg Message
 
 	ctx, span := c.Tracer.Start(context.Background(), "ping.publish")
@@ -119,7 +119,11 @@ func (c *Client) Ping() {
 		c.Logger.Fatal("cannot marshal message", zap.Error(err))
 	}
 
-	c.Client.Publish(PingTopic, byte(c.QoS), c.Retained, b)
+	if token := c.Client.Publish(PingTopic, byte(c.QoS), c.Retained, b); token.Wait() && token.Error() != nil {
+		return fmt.Errorf("failed to publish %w", err)
+	}
+
+	return nil
 }
 
 func (c *Client) Disconnect() {
