@@ -1,16 +1,17 @@
 package config
 
 import (
+	"time"
+
+	"github.com/snapp-incubator/mqtt-blackbox-exporter/internal/client"
 	"github.com/snapp-incubator/mqtt-blackbox-exporter/internal/logger"
 	telemetry "github.com/snapp-incubator/mqtt-blackbox-exporter/internal/telemetry/config"
 )
 
 // Default return default configuration.
+// nolint: gomnd
 func Default() Config {
 	return Config{
-		Logger: logger.Config{
-			Level: "debug",
-		},
 		Telemetry: telemetry.Config{
 			Trace: telemetry.Trace{
 				Enabled: false,
@@ -29,5 +30,20 @@ func Default() Config {
 				Enabled: true,
 			},
 		},
+		Logger: logger.Config{
+			Level: "debug",
+		},
+		MQTT: client.Config{
+			URL:           "",
+			ClientID:      "",
+			Username:      "",
+			Password:      "",
+			KeepAlive:     60 * time.Second,
+			PingTimeout:   1 * time.Second,
+			AutoReconnect: true,
+			QoS:           1,
+			Retained:      true,
+		},
+		PingDuration: 60 * time.Second,
 	}
 }
