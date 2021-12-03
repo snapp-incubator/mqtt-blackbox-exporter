@@ -3,6 +3,7 @@ package config
 import (
 	"log"
 	"strings"
+	"time"
 
 	"github.com/knadh/koanf"
 	"github.com/knadh/koanf/parsers/yaml"
@@ -24,9 +25,10 @@ type (
 
 	// Config holds all configurations.
 	Config struct {
-		Telemetry telemetry.Config `koanf:"telemetry"`
-		Logger    logger.Config    `koanf:"logger"`
-		MQTT      client.Config    `koanf:"mqtt"`
+		Telemetry    telemetry.Config `koanf:"telemetry"`
+		Logger       logger.Config    `koanf:"logger"`
+		MQTT         client.Config    `koanf:"mqtt"`
+		PingDuration time.Duration    `koanf:"ping_duration"`
 	}
 )
 
@@ -49,7 +51,7 @@ func New() Config {
 	// load environment variables
 	if err := k.Load(env.Provider(Prefix, ".", func(s string) string {
 		return strings.ReplaceAll(strings.ToLower(
-			strings.TrimPrefix(s, Prefix)), "_", ".")
+			strings.TrimPrefix(s, Prefix)), "__", ".")
 	}), nil); err != nil {
 		log.Printf("error loading environment variables: %s", err)
 	}

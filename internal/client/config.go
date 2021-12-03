@@ -12,4 +12,6 @@ type Config struct {
 	KeepAlive     time.Duration `koanf:"keepalive"`
 	PingTimeout   time.Duration `koanf:"ping_timeout"`
 	AutoReconnect bool          `koanf:"auto_reconnect"`
+	QoS           int           `koanf:"qos"`
+	Retained      bool          `koanf:"retained"`
 }
