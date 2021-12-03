@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"os"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"go.opentelemetry.io/otel"
@@ -40,8 +41,19 @@ func New(cfg Config, logger *zap.Logger, tracer trace.Tracer, isSubscribe bool) 
 	mqtt.DEBUG, _ = zap.NewStdLogAt(logger.Named("raw"), zap.DebugLevel)
 	mqtt.ERROR, _ = zap.NewStdLogAt(logger.Named("raw"), zap.ErrorLevel)
 
+	clientID := cfg.ClientID
+	if clientID == "" {
+		var err error
+
+		clientID, err = os.Hostname()
+		if err != nil {
+			logger.Fatal("hostname fetching failed, specify a client id", zap.Error(err))
+		}
+	}
+
 	opts := mqtt.NewClientOptions()
 
+	opts.SetClientID(clientID)
 	opts.AddBroker(cfg.URL)
 
 	if cfg.Username != "" {

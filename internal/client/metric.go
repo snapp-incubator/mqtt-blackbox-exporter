@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	Namespace = "mqtt-blackbox-exporter"
+	Namespace = "mqtt_blackbox_exporter"
 	Subsystem = "client"
 )
 

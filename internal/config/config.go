@@ -1,6 +1,7 @@
 package config
 
 import (
+	"encoding/json"
 	"log"
 	"strings"
 	"time"
@@ -60,7 +61,13 @@ func New() Config {
 		log.Fatalf("error unmarshalling config: %s", err)
 	}
 
-	log.Printf("following configuration is loaded:\n%+v", instance)
+	indent, _ := json.MarshalIndent(instance, "", "\t")
+	cfgStrTemplate := `
+	================ Loaded Configuration ================
+	%s
+	======================================================
+	`
+	log.Printf(cfgStrTemplate, string(indent))
 
 	return instance
 }

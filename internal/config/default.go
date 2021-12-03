@@ -15,7 +15,7 @@ func Default() Config {
 		Telemetry: telemetry.Config{
 			Trace: telemetry.Trace{
 				Enabled: false,
-				Ratio:   1.0,
+				Ratio:   0.1,
 				Agent: telemetry.Agent{
 					Host: "127.0.0.1",
 					Port: "6831",
@@ -34,7 +34,7 @@ func Default() Config {
 			Level: "debug",
 		},
 		MQTT: client.Config{
-			URL:           "",
+			URL:           "tcp://127.0.0.1:1883",
 			ClientID:      "",
 			Username:      "",
 			Password:      "",
