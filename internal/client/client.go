@@ -26,8 +26,9 @@ type Client struct {
 	Tracer  trace.Tracer
 	Metrics Metrics
 
-	QoS      int
-	Retained bool
+	QoS         int
+	Retained    bool
+	IsSubscribe bool
 }
 
 // Message contains the information to send over ping.
@@ -51,6 +52,12 @@ func New(cfg Config, logger *zap.Logger, tracer trace.Tracer, isSubscribe bool) 
 		}
 	}
 
+	if isSubscribe {
+		clientID += "-subscriber"
+	} else {
+		clientID += "-producer"
+	}
+
 	opts := mqtt.NewClientOptions()
 
 	opts.SetClientID(clientID)
@@ -69,15 +76,19 @@ func New(cfg Config, logger *zap.Logger, tracer trace.Tracer, isSubscribe bool) 
 	opts.SetPingTimeout(cfg.PingTimeout)
 
 	client := &Client{
-		Logger:   logger,
-		Client:   mqtt.NewClient(opts),
-		Tracer:   tracer,
-		Metrics:  NewMetrics(),
-		Retained: cfg.Retained,
-		QoS:      cfg.QoS,
+		Logger:      logger,
+		Client:      nil,
+		Tracer:      tracer,
+		Metrics:     NewMetrics(),
+		Retained:    cfg.Retained,
+		QoS:         cfg.QoS,
+		IsSubscribe: isSubscribe,
 	}
 
 	opts.SetConnectionLostHandler(client.OnConnectionLostHandler)
+	opts.SetOnConnectHandler(client.OnConnectHandler)
+
+	client.Client = mqtt.NewClient(opts)
 
 	return client
 }
@@ -88,26 +99,31 @@ func (c *Client) OnConnectionLostHandler(_ mqtt.Client, err error) {
 }
 
 func (c *Client) OnConnectHandler(_ mqtt.Client) {
-	if token := c.Client.Subscribe(PingTopic, byte(c.QoS), c.Pong); token.Wait() && token.Error() != nil {
-		c.Logger.Fatal("subscription failed", zap.String("topic", PingTopic), zap.Error(token.Error()))
+	if c.IsSubscribe {
+		if token := c.Client.Subscribe(PingTopic, byte(c.QoS), c.Pong); token.Wait() && token.Error() != nil {
+			c.Logger.Fatal("subscription failed", zap.String("topic", PingTopic), zap.Error(token.Error()))
+		}
 	}
 }
 
 func (c *Client) Pong(_ mqtt.Client, b mqtt.Message) {
-	ctx, span := c.Tracer.Start(context.Background(), "ping.subscribe")
-	defer span.End()
-
 	var msg Message
 
 	if err := json.Unmarshal(b.Payload(), &msg); err != nil {
 		c.Logger.Fatal("cannot marshal message", zap.Error(err))
 	}
 
-	otel.GetTextMapPropagator().Extract(ctx, propagation.MapCarrier(msg.Headers))
+	ctx := otel.GetTextMapPropagator().Extract(context.Background(), propagation.MapCarrier(msg.Headers))
+
+	_, span := c.Tracer.Start(ctx, "ping.received")
+	defer span.End()
 }
 
 func (c *Client) Ping() error {
+	c.Logger.Debug("ping...", zap.String("topic", PingTopic))
+
 	var msg Message
+	msg.Headers = make(map[string]string)
 
 	ctx, span := c.Tracer.Start(context.Background(), "ping.publish")
 	defer span.End()
