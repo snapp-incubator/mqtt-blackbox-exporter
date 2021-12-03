@@ -26,7 +26,7 @@ func newCounter(counterOpts prometheus.CounterOpts) prometheus.Counter {
 
 	if err := prometheus.Register(ev); err != nil {
 		var are prometheus.AlreadyRegisteredError
-		if ok := errors.As(err, &ev); ok {
+		if ok := errors.As(err, &are); ok {
 			ev, ok = are.ExistingCollector.(prometheus.Counter)
 			if !ok {
 				panic("different metric type registration")
@@ -45,7 +45,7 @@ func newHistogram(histogramOpts prometheus.HistogramOpts) prometheus.Histogram {
 
 	if err := prometheus.Register(ev); err != nil {
 		var are prometheus.AlreadyRegisteredError
-		if ok := errors.As(err, &ev); ok {
+		if ok := errors.As(err, &are); ok {
 			ev, ok = are.ExistingCollector.(prometheus.Histogram)
 			if !ok {
 				panic("different metric type registration")
