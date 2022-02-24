@@ -1,9 +1,9 @@
 package cmd
 
 import (
-	"github.com/snapp-incubator/mqtt-blackbox-exporter/internal/cache"
 	"time"
 
+	"github.com/snapp-incubator/mqtt-blackbox-exporter/internal/cache"
 	"github.com/snapp-incubator/mqtt-blackbox-exporter/internal/client"
 	"github.com/snapp-incubator/mqtt-blackbox-exporter/internal/config"
 	"go.opentelemetry.io/otel/trace"
