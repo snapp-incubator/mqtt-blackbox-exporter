@@ -7,6 +7,7 @@ import (
 	"github.com/snapp-incubator/mqtt-blackbox-exporter/internal/cache"
 	"os"
 	"strconv"
+	"time"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"go.opentelemetry.io/otel"
@@ -121,6 +122,19 @@ func (c *Client) Pong(_ mqtt.Client, b mqtt.Message) {
 
 	_, span := c.Tracer.Start(ctx, "ping.received")
 	defer span.End()
+
+	if value, has := msg.Headers["id"]; has {
+		id, _ := strconv.Atoi(value)
+		item := c.Cache.Pull(id)
+
+		if item.Status {
+			item.Status = false
+			duration := time.Since(item.Start)
+
+			c.Logger.Info("successful ping", zap.Duration("time", duration), zap.Int("id", id))
+			c.Metrics.PingDuration.Observe(duration.Seconds())
+		}
+	}
 }
 
 func (c *Client) Ping(id int) error {
