@@ -154,6 +154,8 @@ func (c *Client) Ping(id int) error {
 		c.Logger.Fatal("cannot marshal message", zap.Error(err))
 	}
 
+	c.Cache.Push(id, time.Now())
+
 	if token := c.Client.Publish(PingTopic, byte(c.QoS), c.Retained, b); token.Wait() && token.Error() != nil {
 		return fmt.Errorf("failed to publish %w", err)
 	}
