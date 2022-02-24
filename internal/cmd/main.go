@@ -30,8 +30,8 @@ func main(cfg config.Config, logger *zap.Logger, trace trace.Tracer) {
 		}
 
 		ticker := time.NewTicker(cfg.PingDuration)
-		for range ticker.C {
-			if err := client.Ping(); err != nil {
+		for i := range ticker.C {
+			if err := client.Ping(c.Push(int(i.UnixMilli()), time.Now())); err != nil {
 				logger.Error("publish failed", zap.Error(err))
 			}
 		}

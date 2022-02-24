@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/snapp-incubator/mqtt-blackbox-exporter/internal/cache"
 	"os"
+	"strconv"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"go.opentelemetry.io/otel"
@@ -122,11 +123,12 @@ func (c *Client) Pong(_ mqtt.Client, b mqtt.Message) {
 	defer span.End()
 }
 
-func (c *Client) Ping() error {
+func (c *Client) Ping(id int) error {
 	c.Logger.Debug("ping...", zap.String("topic", PingTopic))
 
 	var msg Message
 	msg.Headers = make(map[string]string)
+	msg.Headers["id"] = strconv.Itoa(id)
 
 	ctx, span := c.Tracer.Start(context.Background(), "ping.publish")
 	defer span.End()

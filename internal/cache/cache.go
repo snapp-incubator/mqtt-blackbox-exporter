@@ -19,11 +19,13 @@ func (c *Cache) Init() {
 	c.list = make(map[int]Item)
 }
 
-func (c *Cache) Push(id int, start time.Time) {
+func (c *Cache) Push(id int, start time.Time) int {
 	c.list[id] = Item{
 		Start:  start,
 		Status: false,
 	}
+
+	return id
 }
 
 func (c *Cache) Pull(id int) Item {
