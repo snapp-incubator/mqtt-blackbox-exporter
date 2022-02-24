@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/snapp-incubator/mqtt-blackbox-exporter/internal/cache"
 	"os"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
@@ -25,6 +26,7 @@ type Client struct {
 	Logger  *zap.Logger
 	Tracer  trace.Tracer
 	Metrics Metrics
+	Cache   *cache.Cache
 
 	QoS         int
 	Retained    bool
@@ -38,7 +40,7 @@ type Message struct {
 
 // New creates a new mqtt client with given configuration.
 // isSubscribe for ping message.
-func New(cfg Config, logger *zap.Logger, tracer trace.Tracer, isSubscribe bool) *Client {
+func New(cfg Config, logger *zap.Logger, tracer trace.Tracer, cache *cache.Cache, isSubscribe bool) *Client {
 	mqtt.DEBUG, _ = zap.NewStdLogAt(logger.Named("raw"), zap.DebugLevel)
 	mqtt.ERROR, _ = zap.NewStdLogAt(logger.Named("raw"), zap.ErrorLevel)
 
@@ -81,6 +83,7 @@ func New(cfg Config, logger *zap.Logger, tracer trace.Tracer, isSubscribe bool) 
 		Tracer:      tracer,
 		Metrics:     NewMetrics(),
 		Retained:    cfg.Retained,
+		Cache:       cache,
 		QoS:         cfg.QoS,
 		IsSubscribe: isSubscribe,
 	}
