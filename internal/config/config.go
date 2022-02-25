@@ -14,6 +14,7 @@ import (
 	"github.com/snapp-incubator/mqtt-blackbox-exporter/internal/client"
 	"github.com/snapp-incubator/mqtt-blackbox-exporter/internal/logger"
 	telemetry "github.com/snapp-incubator/mqtt-blackbox-exporter/internal/telemetry/config"
+	"github.com/tidwall/pretty"
 )
 
 const (
@@ -61,9 +62,10 @@ func New() Config {
 
 	indent, err := json.MarshalIndent(instance, "", "\t")
 	if err != nil {
-		log.Fatalf("error marshal indent : %s", err)
+		log.Fatalf("error marshaling config to json: %s", err)
 	}
 
+	indent = pretty.Color(indent, nil)
 	tmpl := `
 	================ Loaded Configuration ================
 	%s
