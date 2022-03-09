@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: # Image file of the project
+  repository: ghcr.io/snapp-incubator/mqtt-blackbox-exporter
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
