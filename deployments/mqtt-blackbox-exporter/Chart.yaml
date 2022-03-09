@@ -11,3 +11,7 @@ dependencies:
   - name: jaeger
     version: 0.55.0
     repository: https://jaegertracing.github.io/helm-charts
+maintainers:
+  - name: parham alvani
+    email: parham.alvani@snapp.cab
+deprecated: false
