@@ -1,13 +1,8 @@
-# Default values for mqtt-blackbox-exporter.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
-
 replicaCount: 1
 
 image:
   repository: ghcr.io/snapp-incubator/mqtt-blackbox-exporter
   pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
   tag: ""
 
 imagePullSecrets: []
@@ -80,3 +75,22 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+emqx:
+  environment:
+    EMQX_NAME: instance-1
+    EMQX_LOADED_PLUGINS: "emqx_management,emqx_dashboard"
+    ports:
+      - 1883:1883
+      - 18083:18083
+jaeger:
+  ports:
+    - target: 6831
+      published: 6831
+      protocol: udp
+    - target: 16686
+      published: 16686
+      protocol: tcp
+    - target: 14268
+      published: 14268
+      protocol: tcp
