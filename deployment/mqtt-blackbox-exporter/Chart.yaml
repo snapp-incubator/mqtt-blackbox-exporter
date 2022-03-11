@@ -1,6 +1,9 @@
 apiVersion: v2
 name: mqtt-blackbox-exporter
-description: Helm chart for snapp mqtt-blackbox-exporter to check MQTT broker status.
+description: Helm chart for snapp mqtt-blackbox-exporter.
+home: https://github.com/snapp-incubator/mqtt-blackbox-exporter
+sources:
+  - https://github.com/snapp-incubator/mqtt-blackbox-exporter.git
 type: application
 version: 0.1.0
 appVersion: "1.16.0"
