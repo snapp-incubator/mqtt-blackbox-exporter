@@ -15,7 +15,8 @@ maintainers:
     url: https://github.com/1995parham
     email: parham.alvani@snapp.cab
 
-deprecated: false
+  - name: amirhossein najafizadeh
+    url: https://github.com/amirhnajafiz
 
 dependencies:
   - name: emqx
