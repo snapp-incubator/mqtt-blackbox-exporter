@@ -1,7 +1,10 @@
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: mqtt-blackbox-exporter-config-map
+  name: {{ include "confisus.fullname" . }}
+  labels:
+    {{- include "confisus.labels" . | nindent 4 }}
 data:
   emqx.config: |
     environment:
