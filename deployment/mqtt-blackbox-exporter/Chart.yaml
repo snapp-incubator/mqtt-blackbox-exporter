@@ -1,0 +1,29 @@
+# Charts file for mqtt-blackbox-exporter
+# author: amirhnajafiz
+# year: 2022
+apiVersion: v2
+name: mqtt-blackbox-exporter
+description: Helm chart for snapp mqtt-blackbox-exporter.
+# GitHub source
+home: https://github.com/snapp-incubator/mqtt-blackbox-exporter
+sources:
+  - https://github.com/snapp-incubator/mqtt-blackbox-exporter.git
+# application version
+type: application
+version: 0.1.0
+appVersion: "1.16.0"
+# application maintainers
+maintainers:
+  - name: parham alvani
+    url: https://github.com/1995parham
+    email: parham.alvani@snapp.cab
+  - name: amirhossein najafizadeh
+    url: https://github.com/amirhnajafiz
+# application dependencies
+dependencies:
+  - name: emqx
+    version: 4.2.0
+    repository: https://repos.emqx.io/charts
+  - name: jaeger
+    version: 0.55.0
+    repository: https://jaegertracing.github.io/helm-charts

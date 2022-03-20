@@ -1,0 +1,83 @@
+# Values file for mqtt-blackbox-exporter
+# author: amirhnajafiz
+# year: 2022
+
+# Replica counts of our service
+replicaCount: 1
+
+# docker image information of mqtt-blackbox-exporter
+image:
+  repository: ghcr.io/snapp-incubator/mqtt-blackbox-exporter
+  tag: "latest"
+
+# service config
+service:
+  type: ClusterIP
+  port: 80
+
+# service resources
+resources: {}
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+# scaling options
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+
+# values for config-map
+config:
+  telemetry:
+    trace:
+      enabled: true
+      ratio: 0.1
+      agent:
+        host: "127.0.0.1"
+        port: 6831
+    profiler:
+      enabled: true
+      address: "http://127.0.0.1:4040"
+    metric:
+      enabled: true
+      address: ":8080"
+    logger:
+      level: "Debug"
+    mqtt:
+      url: "tcp://127.0.0.1:1883"
+      clientid: ""
+      username: ""
+      password: ""
+      keepalive: 60
+      ping_timeout: 1
+      auto_reconnect: true
+      qos: 1
+      retained: true
+    ping_duration: 1
+
+# emqx configs
+emqx:
+  environment:
+    EMQX_NAME: instance-1
+    EMQX_LOADED_PLUGINS: "emqx_management,emqx_dashboard"
+  ports:
+    - 1883:1883
+    - 18083:18083
+
+# jaeger configs
+jaeger:
+  ports:
+    - target: 6831
+      published: 6831
+      protocol: udp
+    - target: 16686
+      published: 16686
+      protocol: tcp
+    - target: 14268
+      published: 14268
+      protocol: tcp

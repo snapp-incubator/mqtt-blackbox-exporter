@@ -15,7 +15,7 @@ COPY . .
 
 # Build the Go app
 WORKDIR /app/cmd/mqtt-blackbox-exporter
-RUN go build -o /mqtt-blackbox-exporter
+RUN go build -o mqtt-blackbox-exporter
 
 FROM alpine:latest
 
