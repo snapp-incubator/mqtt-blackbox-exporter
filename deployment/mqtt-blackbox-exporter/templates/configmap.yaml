@@ -3,33 +3,9 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ include "mqtt-blackbox-exporter.fullname" . }}
+  namespace: '{{ .Release.Namespace }}'
   labels:
     {{- include "mqtt-blackbox-exporter.labels" . | nindent 4 }}
 data:
   config.yml: |
-    telemetry:
-      trace:
-        enabled: true
-        ratio: 0.1
-        agent:
-          host: "127.0.0.1"
-          port: 6831
-      profiler:
-        enabled: true
-        address: "http://127.0.0.1:4040"
-      metric:
-        enabled: true
-        address: ":8080"
-    logger:
-      level: "Debug"
-    mqtt:
-      url: "tcp://127.0.0.1:1883"
-      clientid: ""
-      username: ""
-      password: ""
-      keepalive: 60
-      ping_timeout: 1
-      auto_reconnect: true
-      qos: 1
-      retained: true
-    ping_duration: 1
+    {{- toYaml .Values.config | default "{}" | nindent 4 }}
