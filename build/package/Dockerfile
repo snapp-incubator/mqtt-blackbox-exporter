@@ -4,6 +4,9 @@ FROM golang:alpine AS builder
 # Set the Current Working Directory inside the container
 WORKDIR /app
 
+# Installing Git for alpine
+RUN apk add --no-cache git
+
 # Copy go mod and sum files
 COPY go.mod go.sum ./
 
@@ -15,7 +18,7 @@ COPY . .
 
 # Build the Go app
 WORKDIR /app/cmd/mqtt-blackbox-exporter
-RUN go build -o mqtt-blackbox-exporter
+RUN go build -o /mqtt-blackbox-exporter
 
 FROM alpine:latest
 
