@@ -158,12 +158,18 @@ func (c *Client) Ping(id int) error {
 
 	b, err := json.Marshal(msg)
 	if err != nil {
+		span.RecordError(err)
+		span.SetStatus(codes.Error, err.Error())
+
 		c.Logger.Fatal("cannot marshal message", zap.Error(err))
 	}
 
 	c.Cache.Push(id, time.Now())
 
 	if token := c.Client.Publish(PingTopic, byte(c.QoS), c.Retained, b); token.Wait() && token.Error() != nil {
+		span.RecordError(token.Error())
+		span.SetStatus(codes.Error, token.Error().Error())
+
 		return fmt.Errorf("failed to publish %w", err)
 	}
 
