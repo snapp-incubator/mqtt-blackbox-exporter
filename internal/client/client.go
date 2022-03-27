@@ -175,8 +175,14 @@ func (c *Client) Disconnect() {
 }
 
 func (c *Client) Connect() error {
+	_, span := c.Tracer.Start(context.Background(), "client.on.connect")
+	defer span.End()
+
 	if token := c.Client.Connect(); token.Wait() && token.Error() != nil {
 		c.Metrics.ConnectionErrors.Add(1)
+
+		span.SetStatus(codes.Error, token.Error().Error())
+		span.RecordError(token.Error())
 
 		return fmt.Errorf("mqtt connection failed %w", token.Error())
 	}
