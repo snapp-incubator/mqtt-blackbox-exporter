@@ -111,8 +111,14 @@ func (c *Client) OnConnectionLostHandler(_ mqtt.Client, err error) {
 }
 
 func (c *Client) OnConnectHandler(_ mqtt.Client) {
+	_, span := c.Tracer.Start(context.Background(), "client.on.connect.handler")
+	defer span.End()
+
 	if c.IsSubscribe {
 		if token := c.Client.Subscribe(PingTopic, byte(c.QoS), c.Pong); token.Wait() && token.Error() != nil {
+			span.RecordError(token.Error())
+			span.SetStatus(codes.Error, token.Error().Error())
+
 			c.Logger.Fatal("subscription failed", zap.String("topic", PingTopic), zap.Error(token.Error()))
 		}
 	}
