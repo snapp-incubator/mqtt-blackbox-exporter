@@ -11,6 +11,7 @@ import (
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"github.com/snapp-incubator/mqtt-blackbox-exporter/internal/cache"
 	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/trace"
 	"go.uber.org/zap"
@@ -46,12 +47,18 @@ func New(cfg Config, logger *zap.Logger, tracer trace.Tracer, cache *cache.Cache
 	mqtt.DEBUG, _ = zap.NewStdLogAt(logger.Named("raw"), zap.DebugLevel)
 	mqtt.ERROR, _ = zap.NewStdLogAt(logger.Named("raw"), zap.ErrorLevel)
 
+	_, span := tracer.Start(context.Background(), "client.new")
+	defer span.End()
+
 	clientID := cfg.ClientID
 	if clientID == "" {
 		var err error
 
 		clientID, err = os.Hostname()
 		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, err.Error())
+
 			logger.Fatal("hostname fetching failed, specify a client id", zap.Error(err))
 		}
 	}
