@@ -14,13 +14,13 @@ import (
 )
 
 func main(cfg config.Config, logger *zap.Logger, trace trace.Tracer) {
-	_, span := trace.Start(context.Background(), "cmd.main")
-	defer span.End()
-
 	c := cache.Cache{}
 	c.Init()
 
 	{
+		_, span := trace.Start(context.Background(), "cmd.main.subscriber")
+		defer span.End()
+
 		client := client.New(cfg.MQTT, logger.Named("mqtt"), trace, &c, true)
 
 		if err := client.Connect(); err != nil {
@@ -32,6 +32,9 @@ func main(cfg config.Config, logger *zap.Logger, trace trace.Tracer) {
 	}
 
 	{
+		_, span := trace.Start(context.Background(), "cmd.main.publisher")
+		defer span.End()
+
 		client := client.New(cfg.MQTT, logger.Named("mqtt"), trace, &c, false)
 
 		if err := client.Connect(); err != nil {
