@@ -10,3 +10,4 @@ linters:
     - scopelint
     - golint
     - interfacer
+    - funlen
