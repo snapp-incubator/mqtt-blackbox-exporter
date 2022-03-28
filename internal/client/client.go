@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"go.opentelemetry.io/otel/attribute"
 	"os"
 	"strconv"
 	"time"
@@ -69,6 +70,9 @@ func New(cfg Config, logger *zap.Logger, tracer trace.Tracer, cache *cache.Cache
 		clientID += "-producer"
 	}
 
+	span.SetAttributes(attribute.String("client-id", clientID))
+	span.SetAttributes(attribute.String("broker-url", cfg.URL))
+
 	opts := mqtt.NewClientOptions()
 
 	opts.SetClientID(clientID)
@@ -127,14 +131,17 @@ func (c *Client) OnConnectHandler(_ mqtt.Client) {
 func (c *Client) Pong(_ mqtt.Client, b mqtt.Message) {
 	var msg Message
 
-	if err := json.Unmarshal(b.Payload(), &msg); err != nil {
-		c.Logger.Fatal("cannot marshal message", zap.Error(err))
-	}
-
 	ctx := otel.GetTextMapPropagator().Extract(context.Background(), propagation.MapCarrier(msg.Headers))
 
 	_, span := c.Tracer.Start(ctx, "ping.received")
 	defer span.End()
+
+	if err := json.Unmarshal(b.Payload(), &msg); err != nil {
+		span.RecordError(err)
+		span.SetStatus(codes.Error, err.Error())
+
+		c.Logger.Fatal("cannot marshal message", zap.Error(err))
+	}
 
 	if value, has := msg.Headers["id"]; has {
 		id, _ := strconv.Atoi(value)
