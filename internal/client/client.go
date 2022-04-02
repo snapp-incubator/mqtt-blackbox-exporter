@@ -44,11 +44,11 @@ type Message struct {
 
 // New creates a new mqtt client with given configuration.
 // isSubscribe for ping message.
-func New(cfg Config, logger *zap.Logger, tracer trace.Tracer, cache *cache.Cache, isSubscribe bool) *Client {
+func New(ctx context.Context, cfg Config, logger *zap.Logger, tracer trace.Tracer, cache *cache.Cache, isSubscribe bool) *Client {
 	mqtt.DEBUG, _ = zap.NewStdLogAt(logger.Named("raw"), zap.DebugLevel)
 	mqtt.ERROR, _ = zap.NewStdLogAt(logger.Named("raw"), zap.ErrorLevel)
 
-	_, span := tracer.Start(context.Background(), "client.new")
+	_, span := tracer.Start(ctx, "client.new")
 	defer span.End()
 
 	clientID := cfg.ClientID
@@ -115,7 +115,8 @@ func (c *Client) OnConnectionLostHandler(_ mqtt.Client, err error) {
 }
 
 func (c *Client) OnConnectHandler(_ mqtt.Client) {
-	_, span := c.Tracer.Start(context.Background(), "client.on.connect.handler")
+	ctx := otel.GetTextMapPropagator().Extract(context.Background(), nil)
+	_, span := c.Tracer.Start(ctx, "client.on.connect.handler")
 	defer span.End()
 
 	if c.IsSubscribe {
@@ -157,14 +158,14 @@ func (c *Client) Pong(_ mqtt.Client, b mqtt.Message) {
 	}
 }
 
-func (c *Client) Ping(id int) error {
+func (c *Client) Ping(ctx context.Context, id int) error {
 	c.Logger.Debug("ping...", zap.String("topic", PingTopic))
 
 	var msg Message
 	msg.Headers = make(map[string]string)
 	msg.Headers["id"] = strconv.Itoa(id)
 
-	ctx, span := c.Tracer.Start(context.Background(), "ping.publish")
+	_, span := c.Tracer.Start(ctx, "ping.publish")
 	defer span.End()
 
 	otel.GetTextMapPropagator().Inject(ctx, propagation.MapCarrier(msg.Headers))
@@ -194,7 +195,8 @@ func (c *Client) Disconnect() {
 }
 
 func (c *Client) Connect() error {
-	_, span := c.Tracer.Start(context.Background(), "client.on.connect")
+	ctx := otel.GetTextMapPropagator().Extract(context.Background(), nil)
+	_, span := c.Tracer.Start(ctx, "client.on.connect")
 	defer span.End()
 
 	if token := c.Client.Connect(); token.Wait() && token.Error() != nil {
