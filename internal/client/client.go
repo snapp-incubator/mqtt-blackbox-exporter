@@ -44,7 +44,13 @@ type Message struct {
 
 // New creates a new mqtt client with given configuration.
 // isSubscribe for ping message.
-func New(ctx context.Context, cfg Config, logger *zap.Logger, tracer trace.Tracer, cache *cache.Cache, isSubscribe bool) *Client {
+func New(
+	ctx context.Context,
+	cfg Config,
+	logger *zap.Logger,
+	tracer trace.Tracer,
+	cache *cache.Cache,
+	isSubscribe bool) *Client {
 	mqtt.DEBUG, _ = zap.NewStdLogAt(logger.Named("raw"), zap.DebugLevel)
 	mqtt.ERROR, _ = zap.NewStdLogAt(logger.Named("raw"), zap.ErrorLevel)
 
@@ -117,6 +123,7 @@ func (c *Client) OnConnectionLostHandler(_ mqtt.Client, err error) {
 func (c *Client) OnConnectHandler(_ mqtt.Client) {
 	ctx := otel.GetTextMapPropagator().Extract(context.Background(), nil)
 	_, span := c.Tracer.Start(ctx, "client.on.connect.handler")
+
 	defer span.End()
 
 	if c.IsSubscribe {
@@ -197,6 +204,7 @@ func (c *Client) Disconnect() {
 func (c *Client) Connect() error {
 	ctx := otel.GetTextMapPropagator().Extract(context.Background(), nil)
 	_, span := c.Tracer.Start(ctx, "client.on.connect")
+
 	defer span.End()
 
 	if token := c.Client.Connect(); token.Wait() && token.Error() != nil {
