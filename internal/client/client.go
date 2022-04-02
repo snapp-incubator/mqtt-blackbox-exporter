@@ -44,8 +44,7 @@ type Message struct {
 
 // New creates a new mqtt client with given configuration.
 // isSubscribe for ping message.
-func New(
-	ctx context.Context,
+func New(ctx context.Context,
 	cfg Config,
 	logger *zap.Logger,
 	tracer trace.Tracer,
