@@ -49,7 +49,8 @@ func New(ctx context.Context,
 	logger *zap.Logger,
 	tracer trace.Tracer,
 	cache *cache.Cache,
-	isSubscribe bool) *Client {
+	isSubscribe bool,
+) *Client {
 	mqtt.DEBUG, _ = zap.NewStdLogAt(logger.Named("raw"), zap.DebugLevel)
 	mqtt.ERROR, _ = zap.NewStdLogAt(logger.Named("raw"), zap.ErrorLevel)
 
