@@ -11,6 +11,8 @@ import (
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"github.com/snapp-incubator/mqtt-blackbox-exporter/internal/cache"
 	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/trace"
 	"go.uber.org/zap"
@@ -42,9 +44,18 @@ type Message struct {
 
 // New creates a new mqtt client with given configuration.
 // isSubscribe for ping message.
-func New(cfg Config, logger *zap.Logger, tracer trace.Tracer, cache *cache.Cache, isSubscribe bool) *Client {
+func New(ctx context.Context,
+	cfg Config,
+	logger *zap.Logger,
+	tracer trace.Tracer,
+	cache *cache.Cache,
+	isSubscribe bool,
+) *Client {
 	mqtt.DEBUG, _ = zap.NewStdLogAt(logger.Named("raw"), zap.DebugLevel)
 	mqtt.ERROR, _ = zap.NewStdLogAt(logger.Named("raw"), zap.ErrorLevel)
+
+	_, span := tracer.Start(ctx, "client.new")
+	defer span.End()
 
 	clientID := cfg.ClientID
 	if clientID == "" {
@@ -52,6 +63,9 @@ func New(cfg Config, logger *zap.Logger, tracer trace.Tracer, cache *cache.Cache
 
 		clientID, err = os.Hostname()
 		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, err.Error())
+
 			logger.Fatal("hostname fetching failed, specify a client id", zap.Error(err))
 		}
 	}
@@ -61,6 +75,9 @@ func New(cfg Config, logger *zap.Logger, tracer trace.Tracer, cache *cache.Cache
 	} else {
 		clientID += "-producer"
 	}
+
+	span.SetAttributes(attribute.String("client-id", clientID))
+	span.SetAttributes(attribute.String("broker-url", cfg.URL))
 
 	opts := mqtt.NewClientOptions()
 
@@ -104,8 +121,16 @@ func (c *Client) OnConnectionLostHandler(_ mqtt.Client, err error) {
 }
 
 func (c *Client) OnConnectHandler(_ mqtt.Client) {
+	ctx := otel.GetTextMapPropagator().Extract(context.Background(), nil)
+	_, span := c.Tracer.Start(ctx, "client.on.connect.handler")
+
+	defer span.End()
+
 	if c.IsSubscribe {
 		if token := c.Client.Subscribe(PingTopic, byte(c.QoS), c.Pong); token.Wait() && token.Error() != nil {
+			span.RecordError(token.Error())
+			span.SetStatus(codes.Error, token.Error().Error())
+
 			c.Logger.Fatal("subscription failed", zap.String("topic", PingTopic), zap.Error(token.Error()))
 		}
 	}
@@ -114,14 +139,17 @@ func (c *Client) OnConnectHandler(_ mqtt.Client) {
 func (c *Client) Pong(_ mqtt.Client, b mqtt.Message) {
 	var msg Message
 
-	if err := json.Unmarshal(b.Payload(), &msg); err != nil {
-		c.Logger.Fatal("cannot marshal message", zap.Error(err))
-	}
-
 	ctx := otel.GetTextMapPropagator().Extract(context.Background(), propagation.MapCarrier(msg.Headers))
 
 	_, span := c.Tracer.Start(ctx, "ping.received")
 	defer span.End()
+
+	if err := json.Unmarshal(b.Payload(), &msg); err != nil {
+		span.RecordError(err)
+		span.SetStatus(codes.Error, err.Error())
+
+		c.Logger.Fatal("cannot marshal message", zap.Error(err))
+	}
 
 	if value, has := msg.Headers["id"]; has {
 		id, _ := strconv.Atoi(value)
@@ -137,26 +165,32 @@ func (c *Client) Pong(_ mqtt.Client, b mqtt.Message) {
 	}
 }
 
-func (c *Client) Ping(id int) error {
+func (c *Client) Ping(ctx context.Context, id int) error {
 	c.Logger.Debug("ping...", zap.String("topic", PingTopic))
 
 	var msg Message
 	msg.Headers = make(map[string]string)
 	msg.Headers["id"] = strconv.Itoa(id)
 
-	ctx, span := c.Tracer.Start(context.Background(), "ping.publish")
+	_, span := c.Tracer.Start(ctx, "ping.publish")
 	defer span.End()
 
 	otel.GetTextMapPropagator().Inject(ctx, propagation.MapCarrier(msg.Headers))
 
 	b, err := json.Marshal(msg)
 	if err != nil {
+		span.RecordError(err)
+		span.SetStatus(codes.Error, err.Error())
+
 		c.Logger.Fatal("cannot marshal message", zap.Error(err))
 	}
 
 	c.Cache.Push(id, time.Now())
 
 	if token := c.Client.Publish(PingTopic, byte(c.QoS), c.Retained, b); token.Wait() && token.Error() != nil {
+		span.RecordError(token.Error())
+		span.SetStatus(codes.Error, token.Error().Error())
+
 		return fmt.Errorf("failed to publish %w", err)
 	}
 
@@ -168,8 +202,16 @@ func (c *Client) Disconnect() {
 }
 
 func (c *Client) Connect() error {
+	ctx := otel.GetTextMapPropagator().Extract(context.Background(), nil)
+	_, span := c.Tracer.Start(ctx, "client.on.connect")
+
+	defer span.End()
+
 	if token := c.Client.Connect(); token.Wait() && token.Error() != nil {
 		c.Metrics.ConnectionErrors.Add(1)
+
+		span.SetStatus(codes.Error, token.Error().Error())
+		span.RecordError(token.Error())
 
 		return fmt.Errorf("mqtt connection failed %w", token.Error())
 	}
