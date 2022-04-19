@@ -7,7 +7,7 @@ replicaCount: 1
 
 # docker image information of mqtt-blackbox-exporter
 image:
-  repository: ghcr.io/snapp-incubator/mqtt-blackbox-exporter
+  repository: ghcr.io/snapp-incubator/mqtt-blackbox-exporter:main
   tag: "latest"
 
 # service config
