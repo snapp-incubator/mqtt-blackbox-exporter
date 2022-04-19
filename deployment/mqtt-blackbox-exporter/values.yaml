@@ -16,7 +16,7 @@ service:
   port: 80
 
 # service resources
-resources: {}
+resources:
   limits:
     cpu: 100m
     memory: 128Mi

@@ -1,0 +1,9 @@
+dependencies:
+- name: emqx
+  repository: https://repos.emqx.io/charts
+  version: 4.2.0
+- name: jaeger
+  repository: https://jaegertracing.github.io/helm-charts
+  version: 0.55.0
+digest: sha256:e512096ef81fce3365d659d92aaf569896d88d88429f6d69ec099620361e3682
+generated: "2022-04-20T00:33:03.482958+04:30"
