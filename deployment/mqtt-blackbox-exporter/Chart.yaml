@@ -22,7 +22,7 @@ maintainers:
 # application dependencies
 dependencies:
   - name: emqx
-    version: 4.2.0
+    version: 4.3.11
     repository: https://repos.emqx.io/charts
   - name: jaeger
     version: 0.55.0

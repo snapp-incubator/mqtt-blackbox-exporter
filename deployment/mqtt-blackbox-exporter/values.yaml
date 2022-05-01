@@ -13,7 +13,7 @@ image:
 
 # service config
 service:
-  type: NodePort
+  type: ClusterIP
   port: 80
 
 # service resources
