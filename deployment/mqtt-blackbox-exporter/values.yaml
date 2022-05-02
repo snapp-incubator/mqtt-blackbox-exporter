@@ -50,7 +50,7 @@ config:
     logger:
       level: "Debug"
     mqtt:
-      url: "tcp://127.0.0.1:1883"
+      url: "tcp://172.16.60.20:11883"
       clientid: ""
       username: ""
       password: ""
@@ -60,15 +60,6 @@ config:
       qos: 1
       retained: true
     ping_duration: 1
-
-# emqx configs
-emqx:
-  environment:
-    EMQX_NAME: instance-1
-    EMQX_LOADED_PLUGINS: "emqx_management,emqx_dashboard"
-  ports:
-    - 1883:1883
-    - 18083:18083
 
 # jaeger configs
 jaeger:
