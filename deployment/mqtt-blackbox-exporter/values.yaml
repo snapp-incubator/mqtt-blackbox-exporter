@@ -8,7 +8,8 @@ replicaCount: 1
 # docker image information of mqtt-blackbox-exporter
 image:
   repository: ghcr.io/snapp-incubator/mqtt-blackbox-exporter
-  tag: "latest"
+  pullPolicy: IfNotPresent
+  tag: "main"
 
 # service config
 service:
@@ -16,13 +17,13 @@ service:
   port: 80
 
 # service resources
-resources: {}
+resources:
   limits:
-    cpu: 100m
-    memory: 128Mi
+    cpu: 200m
+    memory: 256Mi
   requests:
-    cpu: 100m
-    memory: 128Mi
+    cpu: 200m
+    memory: 256Mi
 
 # scaling options
 autoscaling:
@@ -49,7 +50,7 @@ config:
     logger:
       level: "Debug"
     mqtt:
-      url: "tcp://127.0.0.1:1883"
+      url: "tcp://172.16.60.20:11883"
       clientid: ""
       username: ""
       password: ""
@@ -59,15 +60,6 @@ config:
       qos: 1
       retained: true
     ping_duration: 1
-
-# emqx configs
-emqx:
-  environment:
-    EMQX_NAME: instance-1
-    EMQX_LOADED_PLUGINS: "emqx_management,emqx_dashboard"
-  ports:
-    - 1883:1883
-    - 18083:18083
 
 # jaeger configs
 jaeger:

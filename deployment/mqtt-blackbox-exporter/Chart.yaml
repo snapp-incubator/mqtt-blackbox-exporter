@@ -21,9 +21,6 @@ maintainers:
     url: https://github.com/amirhnajafiz
 # application dependencies
 dependencies:
-  - name: emqx
-    version: 4.2.0
-    repository: https://repos.emqx.io/charts
   - name: jaeger
-    version: 0.55.0
+    version: 0.56.1
     repository: https://jaegertracing.github.io/helm-charts
