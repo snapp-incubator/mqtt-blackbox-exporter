@@ -5,10 +5,10 @@ home: https://github.com/snapp-incubator/mqtt-blackbox-exporter
 sources:
   - https://github.com/snapp-incubator/mqtt-blackbox-exporter.git
 maintainers:
-  - name: parham alvani
+  - name: 1995parham
     url: https://github.com/1995parham
-    email: parham.alvani@snapp.cab
-  - name: amirhossein najafizadeh
+    email: parham.alvani@gmail.com
+  - name: amirhnajafiz
     url: https://github.com/amirhnajafiz
 type: application
 version: 0.0.0
