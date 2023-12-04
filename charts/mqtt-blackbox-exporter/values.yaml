@@ -25,6 +25,9 @@ resources:
     cpu: 200m
     memory: 256Mi
 
+serviceMonitor:
+  enabled: true
+
 # scaling options
 autoscaling:
   enabled: false
