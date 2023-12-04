@@ -88,6 +88,7 @@ func NewMetrics() Metrics {
 			Help:        "total number of received pongs",
 			ConstLabels: nil,
 		}),
+		// nolint: exhaustruct
 		PingDuration: newHistogram(prometheus.HistogramOpts{
 			Namespace:   Namespace,
 			Subsystem:   Subsystem,

@@ -23,11 +23,11 @@ func Execute() {
 	tracer := trace.New(cfg.Telemetry.Trace)
 	metric.NewServer(cfg.Telemetry.Metric).Start(logger.Named("metric"))
 
-	// nolint: exhaustivestruct
+	// nolint: exhaustruct
 	root := &cobra.Command{
 		Use:   "mqtt-blackbox-exporter",
 		Short: "ping pong with mqtt broker",
-		Run: func(cmd *cobra.Command, args []string) {
+		Run: func(_ *cobra.Command, _ []string) {
 			main(cfg, logger, tracer)
 		},
 	}

@@ -35,6 +35,7 @@ func NewServer(cfg config.Metric) Server {
 // nolint: gomnd
 func (s Server) Start(logger *zap.Logger) {
 	go func() {
+		// nolint: exhaustruct
 		srv := http.Server{
 			Addr:         s.address,
 			Handler:      s.srv,
