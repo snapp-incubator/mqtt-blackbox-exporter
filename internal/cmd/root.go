@@ -6,7 +6,6 @@ import (
 	"github.com/snapp-incubator/mqtt-blackbox-exporter/internal/config"
 	"github.com/snapp-incubator/mqtt-blackbox-exporter/internal/logger"
 	"github.com/snapp-incubator/mqtt-blackbox-exporter/internal/telemetry/metric"
-	"github.com/snapp-incubator/mqtt-blackbox-exporter/internal/telemetry/profiler"
 	"github.com/snapp-incubator/mqtt-blackbox-exporter/internal/telemetry/trace"
 	"github.com/spf13/cobra"
 )
@@ -23,7 +22,6 @@ func Execute() {
 
 	tracer := trace.New(cfg.Telemetry.Trace)
 	metric.NewServer(cfg.Telemetry.Metric).Start(logger.Named("metric"))
-	profiler.Start(cfg.Telemetry.Profiler)
 
 	// nolint: exhaustivestruct
 	root := &cobra.Command{

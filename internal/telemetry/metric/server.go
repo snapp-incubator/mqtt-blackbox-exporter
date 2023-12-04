@@ -3,6 +3,7 @@ package metric
 import (
 	"errors"
 	"net/http"
+	"time"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/snapp-incubator/mqtt-blackbox-exporter/internal/telemetry/config"
@@ -31,9 +32,19 @@ func NewServer(cfg config.Metric) Server {
 }
 
 // Start creates and run a metric server for prometheus in new go routine.
+// nolint: gomnd
 func (s Server) Start(logger *zap.Logger) {
 	go func() {
-		if err := http.ListenAndServe(s.address, s.srv); !errors.Is(err, http.ErrServerClosed) {
+		srv := http.Server{
+			Addr:         s.address,
+			Handler:      s.srv,
+			ReadTimeout:  10 * time.Second,
+			WriteTimeout: 10 * time.Second,
+			IdleTimeout:  30 * time.Second,
+			TLSConfig:    nil,
+		}
+
+		if err := srv.ListenAndServe(); !errors.Is(err, http.ErrServerClosed) {
 			logger.Error("metric server initiation failed", zap.Error(err))
 		}
 	}()

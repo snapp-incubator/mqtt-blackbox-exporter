@@ -39,7 +39,7 @@ type Client struct {
 
 // Message contains the information to send over ping.
 type Message struct {
-	Headers map[string]string
+	Headers map[string]string `json:"headers,omitempty"`
 }
 
 // New creates a new mqtt client with given configuration.

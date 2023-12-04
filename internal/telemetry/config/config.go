@@ -1,17 +1,17 @@
 package config
 
 type Config struct {
-	Trace  Trace  `koanf:"trace"`
-	Metric Metric `koanf:"metric"`
+	Trace  Trace  `json:"trace,omitempty"  koanf:"trace"`
+	Metric Metric `json:"metric,omitempty" koanf:"metric"`
 }
 
 type Trace struct {
-	Enabled  bool    `koanf:"enabled"`
-	Ratio    float64 `koanf:"ratio"`
-	Endpoint string  `koanf:"endpoint"`
+	Enabled  bool    `json:"enabled,omitempty"  koanf:"enabled"`
+	Ratio    float64 `json:"ratio,omitempty"    koanf:"ratio"`
+	Endpoint string  `json:"endpoint,omitempty" koanf:"endpoint"`
 }
 
 type Metric struct {
-	Address string `koanf:"address"`
-	Enabled bool   `koanf:"enabled"`
+	Address string `json:"address,omitempty" koanf:"address"`
+	Enabled bool   `json:"enabled,omitempty" koanf:"enabled"`
 }
