@@ -14,16 +14,9 @@ func Default() Config {
 	return Config{
 		Telemetry: telemetry.Config{
 			Trace: telemetry.Trace{
-				Enabled: false,
-				Ratio:   0.1,
-				Agent: telemetry.Agent{
-					Host: "127.0.0.1",
-					Port: "6831",
-				},
-			},
-			Profiler: telemetry.Profiler{
-				Enabled: false,
-				Address: "http://127.0.0.1:4040",
+				Enabled:  false,
+				Ratio:    0.1,
+				Endpoint: "127.0.0.1:4317",
 			},
 			Metric: telemetry.Metric{
 				Address: ":8080",
