@@ -1,19 +1,22 @@
 ---
 services:
-  broker:
-    image: emqx/emqx:latest
-    environment:
-      EMQX_NAME: instance-1
-      EMQX_LOADED_PLUGINS: "emqx_management,emqx_dashboard"
-    ports:
-      - 1883:1883
-      - 18083:18083
+  emqx:
+  image: emqx/emqx
+  ports:
+    - 1883:1883
+    - 18083:18083
+
   jaeger:
     image: jaegertracing/all-in-one:latest
+    healthcheck:
+      test: "/go/bin/all-in-one-linux status"
+      interval: 2s
+      timeout: 20s
+      retries: 10
     ports:
-      - target: 6831
-        published: 6831
-        protocol: udp
+      - target: 4317
+        published: 4317
+        protocol: tcp
       - target: 16686
         published: 16686
         protocol: tcp
