@@ -1,11 +1,12 @@
 package trace
 
 import (
+	"context"
 	"log"
 
 	"github.com/snapp-incubator/mqtt-blackbox-exporter/internal/telemetry/config"
 	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/exporters/jaeger"
+	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
 	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
@@ -18,8 +19,9 @@ func New(cfg config.Trace) trace.Tracer {
 		return trace.NewNoopTracerProvider().Tracer("snapp/mqtt-blackbox-exporter")
 	}
 
-	exporter, err := jaeger.New(
-		jaeger.WithAgentEndpoint(jaeger.WithAgentHost(cfg.Agent.Host), jaeger.WithAgentPort(cfg.Agent.Port)),
+	exporter, err := otlptracegrpc.New(
+		context.Background(),
+		otlptracegrpc.WithEndpoint(cfg.Endpoint), otlptracegrpc.WithInsecure(),
 	)
 	if err != nil {
 		log.Fatalf("failed to initialize export pipeline: %v", err)
