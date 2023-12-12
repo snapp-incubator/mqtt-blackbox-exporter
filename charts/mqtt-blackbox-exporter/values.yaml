@@ -45,16 +45,16 @@ config:
     metric:
       enabled: true
       address: ":8080"
-    logger:
-      level: "Debug"
-    mqtt:
-      url: "tcp://broker.emqx.io:1883"
-      clientid: "mqttx_c5c9fbf3"
-      username: ""
-      password: ""
-      keepalive: 60
-      ping_timeout: 1
-      auto_reconnect: true
-      qos: 1
-      retained: true
-    ping_duration: 1
+  logger:
+    level: "Debug"
+  mqtt:
+    url: "tcp://broker.emqx.io:1883"
+    clientid: "mqttx_c5c9fbf3"
+    username: ""
+    password: ""
+    keepalive: 60
+    ping_timeout: 1
+    auto_reconnect: true
+    qos: 1
+    retained: true
+  ping_duration: 1
