@@ -9,7 +9,6 @@ replicaCount: 1
 image:
   repository: ghcr.io/snapp-incubator/mqtt-blackbox-exporter
   pullPolicy: IfNotPresent
-  tag: "main"
 
 # service config
 service:

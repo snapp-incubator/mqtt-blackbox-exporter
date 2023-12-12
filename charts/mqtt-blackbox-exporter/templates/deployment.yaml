@@ -22,7 +22,8 @@ spec:
     spec:
       containers:
         - name: {{ .Chart.Name }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image:
+            "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
@@ -30,14 +31,24 @@ spec:
               protocol: TCP
           livenessProbe:
             httpGet:
-              path: /
+              path: /metrics
               port: http
           readinessProbe:
             httpGet:
-              path: /
+              path: /metrics
               port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: configuration
+              mountPath: "/app/config.yml"
+              subPath: "config.yml"
+              readOnly: true
+      volumes:
+        - name: configuration
+          configMap:
+            defaultMode: 0440
+            name: {{ include "mqtt-blackbox-exporter.fullname" . }}
       {{- with .Values.nodeSelector }}
       restartPolicy: Never
       nodeSelector:
