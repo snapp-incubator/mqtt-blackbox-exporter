@@ -39,22 +39,17 @@ autoscaling:
 config:
   telemetry:
     trace:
-      enabled: true
+      enabled: false
       ratio: 0.1
-      agent:
-        host: "127.0.0.1"
-        port: 6831
-    profiler:
-      enabled: true
-      address: "http://127.0.0.1:4040"
+      endpoint: ""
     metric:
       enabled: true
       address: ":8080"
     logger:
       level: "Debug"
     mqtt:
-      url: "tcp://172.16.60.20:11883"
-      clientid: ""
+      url: "tcp://broker.emqx.io:1883"
+      clientid: "mqttx_c5c9fbf3"
       username: ""
       password: ""
       keepalive: 60
