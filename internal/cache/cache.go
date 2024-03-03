@@ -23,7 +23,7 @@ func (c *Cache) Init() {
 func (c *Cache) Push(id int, start time.Time) {
 	c.list.Store(id, Item{
 		Start:  start,
-		Status: false,
+		Status: true,
 	})
 }
 
