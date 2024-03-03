@@ -192,8 +192,12 @@ func (c *Client) Ping(ctx context.Context, id int) error {
 		span.RecordError(token.Error())
 		span.SetStatus(codes.Error, token.Error().Error())
 
+		c.Metrics.PublishErrors.Inc()
+
 		return fmt.Errorf("failed to publish %w", err)
 	}
+
+	c.Metrics.Pings.Inc()
 
 	return nil
 }
