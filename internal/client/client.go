@@ -142,7 +142,7 @@ func (c *Client) Pong(_ mqtt.Client, b mqtt.Message) {
 
 	ctx := otel.GetTextMapPropagator().Extract(context.Background(), propagation.MapCarrier(msg.Headers))
 
-	_, span := c.Tracer.Start(ctx, "ping.received")
+	_, span := c.Tracer.Start(ctx, "ping.received", trace.WithSpanKind(trace.SpanKindConsumer))
 	defer span.End()
 
 	if err := json.Unmarshal(b.Payload(), &msg); err != nil {
@@ -174,7 +174,7 @@ func (c *Client) Ping(ctx context.Context, id int) error {
 	msg.Headers = make(map[string]string)
 	msg.Headers["id"] = strconv.Itoa(id)
 
-	_, span := c.Tracer.Start(ctx, "ping.publish")
+	_, span := c.Tracer.Start(ctx, "ping.publish", trace.WithSpanKind(trace.SpanKindProducer))
 	defer span.End()
 
 	otel.GetTextMapPropagator().Inject(ctx, propagation.MapCarrier(msg.Headers))
