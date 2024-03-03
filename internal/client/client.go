@@ -202,8 +202,7 @@ func (c *Client) Disconnect() {
 	c.Client.Disconnect(DisconnectTimeout)
 }
 
-func (c *Client) Connect() error {
-	ctx := otel.GetTextMapPropagator().Extract(context.Background(), nil)
+func (c *Client) Connect(ctx context.Context) error {
 	_, span := c.Tracer.Start(ctx, "client.on.connect")
 
 	defer span.End()
