@@ -1,6 +1,7 @@
 package cache
 
 import (
+	"sync"
 	"time"
 )
 
@@ -12,20 +13,23 @@ type Item struct {
 
 // Cache is our application cache for clients.
 type Cache struct {
-	list map[int]Item
+	list sync.Map
 }
 
 func (c *Cache) Init() {
-	c.list = make(map[int]Item)
+	c.list = sync.Map{}
 }
 
 func (c *Cache) Push(id int, start time.Time) {
-	c.list[id] = Item{
+	c.list.Store(id, Item{
 		Start:  start,
 		Status: false,
-	}
+	})
 }
 
 func (c *Cache) Pull(id int) Item {
-	return c.list[id]
+	value, _ := c.list.Load(id)
+	item, _ := value.(Item)
+
+	return item
 }
