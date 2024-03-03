@@ -122,7 +122,7 @@ func (c *Client) OnConnectionLostHandler(_ mqtt.Client, err error) {
 }
 
 func (c *Client) OnConnectHandler(_ mqtt.Client) {
-	ctx := otel.GetTextMapPropagator().Extract(context.Background(), nil)
+	ctx := context.Background()
 	_, span := c.Tracer.Start(ctx, "client.on.connect.handler")
 
 	defer span.End()
