@@ -162,6 +162,7 @@ func (c *Client) Pong(_ mqtt.Client, b mqtt.Message) {
 
 			c.Logger.Info("successful ping", zap.Duration("time", duration), zap.Int("id", id))
 			c.Metrics.PingDuration.Observe(duration.Seconds())
+			c.Metrics.Pongs.Inc()
 		}
 	}
 }
