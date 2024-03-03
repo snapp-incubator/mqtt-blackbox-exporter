@@ -154,10 +154,9 @@ func (c *Client) Pong(_ mqtt.Client, b mqtt.Message) {
 
 	if value, has := msg.Headers["id"]; has {
 		id, _ := strconv.Atoi(value)
-		item := c.Cache.Pull(id)
+		item, ok := c.Cache.Pull(id)
 
-		if item.Status {
-			item.Status = false
+		if ok {
 			duration := time.Since(item.Start)
 
 			c.Logger.Info("successful ping", zap.Duration("time", duration), zap.Int("id", id))

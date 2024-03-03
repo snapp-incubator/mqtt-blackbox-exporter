@@ -7,8 +7,7 @@ import (
 
 // Item stores information about a pinging.
 type Item struct {
-	Start  time.Time
-	Status bool
+	Start time.Time
 }
 
 // Cache is our application cache for clients.
@@ -22,14 +21,13 @@ func (c *Cache) Init() {
 
 func (c *Cache) Push(id int, start time.Time) {
 	c.list.Store(id, Item{
-		Start:  start,
-		Status: true,
+		Start: start,
 	})
 }
 
-func (c *Cache) Pull(id int) Item {
-	value, _ := c.list.Load(id)
+func (c *Cache) Pull(id int) (Item, bool) {
+	value, has := c.list.LoadAndDelete(id)
 	item, _ := value.(Item)
 
-	return item
+	return item, has
 }
