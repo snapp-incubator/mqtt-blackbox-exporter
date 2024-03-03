@@ -84,7 +84,7 @@ func NewMetrics() Metrics {
 		Pongs: newCounter(prometheus.CounterOpts{
 			Namespace:   Namespace,
 			Subsystem:   Subsystem,
-			Name:        "pongs_totla",
+			Name:        "pongs_total",
 			Help:        "total number of received pongs",
 			ConstLabels: nil,
 		}),
