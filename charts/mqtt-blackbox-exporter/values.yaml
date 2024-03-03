@@ -14,7 +14,7 @@ image:
 # service config
 service:
   type: ClusterIP
-  port: 80
+  port: 8080
 
 # service resources
 resources:
