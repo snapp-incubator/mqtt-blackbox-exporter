@@ -7,7 +7,6 @@ import (
 	"github.com/snapp-incubator/mqtt-blackbox-exporter/internal/cache"
 	"github.com/snapp-incubator/mqtt-blackbox-exporter/internal/client"
 	"github.com/snapp-incubator/mqtt-blackbox-exporter/internal/config"
-	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/trace"
@@ -15,7 +14,8 @@ import (
 )
 
 func main(cfg config.Config, logger *zap.Logger, trace trace.Tracer) {
-	ctx := otel.GetTextMapPropagator().Extract(context.Background(), nil)
+	ctx := context.Background()
+
 	c := cache.Cache{}
 	c.Init()
 
