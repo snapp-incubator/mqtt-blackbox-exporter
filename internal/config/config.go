@@ -6,11 +6,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/knadh/koanf"
 	"github.com/knadh/koanf/parsers/yaml"
 	"github.com/knadh/koanf/providers/env"
 	"github.com/knadh/koanf/providers/file"
 	"github.com/knadh/koanf/providers/structs"
+	"github.com/knadh/koanf/v2"
 	"github.com/snapp-incubator/mqtt-blackbox-exporter/internal/client"
 	"github.com/snapp-incubator/mqtt-blackbox-exporter/internal/logger"
 	telemetry "github.com/snapp-incubator/mqtt-blackbox-exporter/internal/telemetry/config"
