@@ -21,40 +21,48 @@ func main(cfg config.Config, logger *zap.Logger, trace trace.Tracer) {
 
 	{
 		_, span := trace.Start(ctx, "cmd.main.subscriber")
-		defer span.End()
 
 		client := client.New(ctx, cfg.MQTT, logger.Named("mqtt"), trace, &c, true)
 
 		if err := client.Connect(ctx); err != nil {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, err.Error())
+			span.End()
 
 			logger.Fatal("mqtt connection failed", zap.Error(err))
 		}
+
+		span.End()
 	}
 
 	{
 		_, span := trace.Start(ctx, "cmd.main.publisher")
-		defer span.End()
 
 		client := client.New(ctx, cfg.MQTT, logger.Named("mqtt"), trace, &c, false)
 
 		if err := client.Connect(ctx); err != nil {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, err.Error())
+			span.End()
 
 			logger.Fatal("mqtt connection failed", zap.Error(err))
 		}
 
+		span.End()
+
 		ticker := time.NewTicker(cfg.PingDuration)
 		for i := range ticker.C {
+			_, span := trace.Start(ctx, "main.ping")
+			span.SetAttributes(attribute.Int("ping_id", int(i.UnixMilli())))
+
 			if err := client.Ping(ctx, int(i.UnixMilli())); err != nil {
-				span.SetAttributes(attribute.Int("ping_id", int(i.UnixMilli())))
 				span.RecordError(err)
 				span.SetStatus(codes.Error, err.Error())
 
 				logger.Error("publish failed", zap.Error(err))
 			}
+
+			span.End()
 		}
 	}
 }
