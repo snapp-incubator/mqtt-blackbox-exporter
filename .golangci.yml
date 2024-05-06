@@ -20,3 +20,5 @@ linters:
     - varcheck
     - deadcode
     - structcheck
+    - gomnd
+    - execinquery

@@ -32,7 +32,7 @@ func NewServer(cfg config.Metric) Server {
 }
 
 // Start creates and run a metric server for prometheus in new go routine.
-// nolint: gomnd
+// nolint: mnd
 func (s Server) Start(logger *zap.Logger) {
 	go func() {
 		// nolint: exhaustruct
