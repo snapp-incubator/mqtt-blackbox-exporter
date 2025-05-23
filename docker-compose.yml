@@ -1,10 +1,10 @@
 ---
 services:
   emqx:
-  image: emqx/emqx
-  ports:
-    - 1883:1883
-    - 18083:18083
+    image: emqx/emqx
+    ports:
+      - 1883:1883
+      - 18083:18083
 
   jaeger:
     image: jaegertracing/all-in-one:latest
