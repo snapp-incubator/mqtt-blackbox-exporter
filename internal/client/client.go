@@ -9,7 +9,6 @@ import (
 	"time"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
-	"github.com/snapp-incubator/mqtt-blackbox-exporter/internal/cache"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
@@ -30,7 +29,6 @@ type Client struct {
 	Logger  *zap.Logger
 	Tracer  trace.Tracer
 	Metrics Metrics
-	Cache   *cache.Cache
 
 	QoS         int
 	Retained    bool
@@ -49,7 +47,6 @@ func New(ctx context.Context,
 	cfg Config,
 	logger *zap.Logger,
 	tracer trace.Tracer,
-	cache *cache.Cache,
 	isSubscribe bool,
 ) *Client {
 	mqtt.DEBUG, _ = zap.NewStdLogAt(logger.Named("raw"), zap.DebugLevel)
@@ -103,7 +100,6 @@ func New(ctx context.Context,
 		Tracer:      tracer,
 		Metrics:     NewMetrics(),
 		Retained:    cfg.Retained,
-		Cache:       cache,
 		QoS:         cfg.QoS,
 		IsSubscribe: isSubscribe,
 	}
@@ -152,14 +148,12 @@ func (c *Client) Pong(_ mqtt.Client, b mqtt.Message) {
 		c.Logger.Fatal("cannot marshal message", zap.Error(err))
 	}
 
-	if value, has := msg.Headers["id"]; has {
-		id, _ := strconv.Atoi(value)
-		item, ok := c.Cache.Pull(id)
+	if id, has := msg.Headers["id"]; has {
+		if value, has := msg.Headers["start"]; has {
+			start, _ := strconv.Atoi(value)
+			duration := time.Since(time.UnixMilli(int64(start)))
 
-		if ok {
-			duration := time.Since(item.Start)
-
-			c.Logger.Info("successful ping", zap.Duration("time", duration), zap.Int("id", id))
+			c.Logger.Info("successful ping", zap.Duration("time", duration), zap.String("id", id))
 			c.Metrics.PingDuration.Observe(duration.Seconds())
 			c.Metrics.Pongs.Inc()
 		}
@@ -172,6 +166,7 @@ func (c *Client) Ping(ctx context.Context, id int) error {
 	var msg Message
 	msg.Headers = make(map[string]string)
 	msg.Headers["id"] = strconv.Itoa(id)
+	msg.Headers["start"] = strconv.Itoa(int(time.Now().UnixMilli()))
 
 	_, span := c.Tracer.Start(ctx, "ping.publish", trace.WithSpanKind(trace.SpanKindProducer))
 	defer span.End()
@@ -185,8 +180,6 @@ func (c *Client) Ping(ctx context.Context, id int) error {
 
 		c.Logger.Fatal("cannot marshal message", zap.Error(err))
 	}
-
-	c.Cache.Push(id, time.Now())
 
 	if token := c.Client.Publish(PingTopic, byte(c.QoS), c.Retained, b); token.Wait() && token.Error() != nil {
 		span.RecordError(token.Error())

@@ -4,7 +4,6 @@ import (
 	"context"
 	"time"
 
-	"github.com/snapp-incubator/mqtt-blackbox-exporter/internal/cache"
 	"github.com/snapp-incubator/mqtt-blackbox-exporter/internal/client"
 	"github.com/snapp-incubator/mqtt-blackbox-exporter/internal/config"
 	"go.opentelemetry.io/otel/attribute"
@@ -16,13 +15,10 @@ import (
 func main(cfg config.Config, logger *zap.Logger, trace trace.Tracer) {
 	ctx := context.Background()
 
-	c := cache.Cache{}
-	c.Init()
-
 	{
 		_, span := trace.Start(ctx, "cmd.main.subscriber")
 
-		client := client.New(ctx, cfg.MQTT, logger.Named("mqtt"), trace, &c, true)
+		client := client.New(ctx, cfg.MQTT, logger.Named("mqtt"), trace, true)
 
 		if err := client.Connect(ctx); err != nil {
 			span.RecordError(err)
@@ -38,7 +34,7 @@ func main(cfg config.Config, logger *zap.Logger, trace trace.Tracer) {
 	{
 		_, span := trace.Start(ctx, "cmd.main.publisher")
 
-		client := client.New(ctx, cfg.MQTT, logger.Named("mqtt"), trace, &c, false)
+		client := client.New(ctx, cfg.MQTT, logger.Named("mqtt"), trace, false)
 
 		if err := client.Connect(ctx); err != nil {
 			span.RecordError(err)
