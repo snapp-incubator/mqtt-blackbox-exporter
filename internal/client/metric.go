@@ -24,7 +24,8 @@ type Metrics struct {
 func newCounter(counterOpts prometheus.CounterOpts) prometheus.Counter {
 	ev := prometheus.NewCounter(counterOpts)
 
-	if err := prometheus.Register(ev); err != nil {
+	err := prometheus.Register(ev)
+	if err != nil {
 		var are prometheus.AlreadyRegisteredError
 		if ok := errors.As(err, &are); ok {
 			ev, ok = are.ExistingCollector.(prometheus.Counter)
@@ -43,7 +44,8 @@ func newCounter(counterOpts prometheus.CounterOpts) prometheus.Counter {
 func newHistogram(histogramOpts prometheus.HistogramOpts) prometheus.Histogram {
 	ev := prometheus.NewHistogram(histogramOpts)
 
-	if err := prometheus.Register(ev); err != nil {
+	err := prometheus.Register(ev)
+	if err != nil {
 		var are prometheus.AlreadyRegisteredError
 		if ok := errors.As(err, &are); ok {
 			ev, ok = are.ExistingCollector.(prometheus.Histogram)

@@ -141,7 +141,8 @@ func (c *Client) Pong(_ mqtt.Client, b mqtt.Message) {
 	_, span := c.Tracer.Start(ctx, "ping.received", trace.WithSpanKind(trace.SpanKindConsumer))
 	defer span.End()
 
-	if err := json.Unmarshal(b.Payload(), &msg); err != nil {
+	err := json.Unmarshal(b.Payload(), &msg)
+	if err != nil {
 		span.RecordError(err)
 		span.SetStatus(codes.Error, err.Error())
 
@@ -164,6 +165,7 @@ func (c *Client) Ping(ctx context.Context, id int) error {
 	c.Logger.Debug("ping...", zap.String("topic", PingTopic))
 
 	var msg Message
+
 	msg.Headers = make(map[string]string)
 	msg.Headers["id"] = strconv.Itoa(id)
 	msg.Headers["start"] = strconv.Itoa(int(time.Now().UnixMilli()))

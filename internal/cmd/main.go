@@ -20,7 +20,8 @@ func main(cfg config.Config, logger *zap.Logger, trace trace.Tracer) {
 
 		client := client.New(ctx, cfg.MQTT, logger.Named("mqtt"), trace, true)
 
-		if err := client.Connect(ctx); err != nil {
+		err := client.Connect(ctx)
+		if err != nil {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, err.Error())
 			span.End()
@@ -36,7 +37,8 @@ func main(cfg config.Config, logger *zap.Logger, trace trace.Tracer) {
 
 		client := client.New(ctx, cfg.MQTT, logger.Named("mqtt"), trace, false)
 
-		if err := client.Connect(ctx); err != nil {
+		err := client.Connect(ctx)
+		if err != nil {
 			span.RecordError(err)
 			span.SetStatus(codes.Error, err.Error())
 			span.End()
@@ -51,7 +53,8 @@ func main(cfg config.Config, logger *zap.Logger, trace trace.Tracer) {
 			_, span := trace.Start(ctx, "main.ping")
 			span.SetAttributes(attribute.Int("ping_id", int(i.UnixMilli())))
 
-			if err := client.Ping(ctx, int(i.UnixMilli())); err != nil {
+			err := client.Ping(ctx, int(i.UnixMilli()))
+			if err != nil {
 				span.RecordError(err)
 				span.SetStatus(codes.Error, err.Error())
 
