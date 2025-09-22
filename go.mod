@@ -3,7 +3,7 @@ module github.com/snapp-incubator/mqtt-blackbox-exporter
 go 1.24.0
 
 require (
-	github.com/eclipse/paho.mqtt.golang v1.5.0
+	github.com/eclipse/paho.mqtt.golang v1.5.1
 	github.com/knadh/koanf v1.5.0
 	github.com/knadh/koanf/v2 v2.2.2
 	github.com/prometheus/client_golang v1.23.2
@@ -43,7 +43,7 @@ require (
 	go.opentelemetry.io/proto/otlp v1.8.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.yaml.in/yaml/v2 v2.4.2 // indirect
-	golang.org/x/net v0.43.0 // indirect
+	golang.org/x/net v0.44.0 // indirect
 	golang.org/x/sync v0.17.0 // indirect
 	golang.org/x/sys v0.36.0 // indirect
 	golang.org/x/text v0.29.0 // indirect
