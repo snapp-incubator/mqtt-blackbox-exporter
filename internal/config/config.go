@@ -25,9 +25,9 @@ const (
 type (
 	// Config holds all configurations.
 	Config struct {
-		Telemetry    telemetry.Config `json:"telemetry,omitempty"     koanf:"telemetry"`
-		Logger       logger.Config    `json:"logger,omitempty"        koanf:"logger"`
-		MQTT         client.Config    `json:"mqtt,omitempty"          koanf:"mqtt"`
+		Telemetry    telemetry.Config `json:"telemetry"               koanf:"telemetry"`
+		Logger       logger.Config    `json:"logger"                  koanf:"logger"`
+		MQTT         client.Config    `json:"mqtt"                    koanf:"mqtt"`
 		PingDuration time.Duration    `json:"ping_duration,omitempty" koanf:"ping_duration"`
 	}
 )

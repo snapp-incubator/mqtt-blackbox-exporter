@@ -1,8 +1,8 @@
 package config
 
 type Config struct {
-	Trace  Trace  `json:"trace,omitempty"  koanf:"trace"`
-	Metric Metric `json:"metric,omitempty" koanf:"metric"`
+	Trace  Trace  `json:"trace"  koanf:"trace"`
+	Metric Metric `json:"metric" koanf:"metric"`
 }
 
 type Trace struct {
