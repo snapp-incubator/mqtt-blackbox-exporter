@@ -5,7 +5,7 @@ go 1.24.0
 require (
 	github.com/eclipse/paho.mqtt.golang v1.5.1
 	github.com/knadh/koanf v1.5.0
-	github.com/knadh/koanf/v2 v2.3.0
+	github.com/knadh/koanf/v2 v2.3.2
 	github.com/prometheus/client_golang v1.23.2
 	github.com/spf13/cobra v1.10.2
 	github.com/tidwall/pretty v1.2.1
