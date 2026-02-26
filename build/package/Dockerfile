@@ -1,5 +1,5 @@
 # Start from the latest golang base image
-FROM golang:1.24-alpine AS builder
+FROM golang:1.26-alpine AS builder
 
 # Set the Current Working Directory inside the container
 WORKDIR /app
@@ -20,7 +20,7 @@ COPY . .
 WORKDIR /app/cmd/mqtt-blackbox-exporter
 RUN go build -o /mqtt-blackbox-exporter
 
-FROM alpine:3.20
+FROM alpine:3.23
 
 WORKDIR /app/
 
