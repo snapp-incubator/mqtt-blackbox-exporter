@@ -189,7 +189,7 @@ func (c *Client) Ping(ctx context.Context, id int) error {
 
 		c.Metrics.PublishErrors.Inc()
 
-		return fmt.Errorf("failed to publish %w", err)
+		return fmt.Errorf("failed to publish %w", token.Error())
 	}
 
 	c.Metrics.Pings.Inc()
