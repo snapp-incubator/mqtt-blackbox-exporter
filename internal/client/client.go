@@ -128,7 +128,7 @@ func (c *Client) OnConnectHandler(_ mqtt.Client) {
 			span.RecordError(token.Error())
 			span.SetStatus(codes.Error, token.Error().Error())
 
-			c.Logger.Fatal("subscription failed", zap.String("topic", PingTopic), zap.Error(token.Error()))
+			c.Logger.Error("subscription failed", zap.String("topic", PingTopic), zap.Error(token.Error()))
 		}
 	}
 }
@@ -136,18 +136,17 @@ func (c *Client) OnConnectHandler(_ mqtt.Client) {
 func (c *Client) Pong(_ mqtt.Client, b mqtt.Message) {
 	var msg Message
 
+	err := json.Unmarshal(b.Payload(), &msg)
+	if err != nil {
+		c.Logger.Error("cannot unmarshal message", zap.Error(err))
+
+		return
+	}
+
 	ctx := otel.GetTextMapPropagator().Extract(context.Background(), propagation.MapCarrier(msg.Headers))
 
 	_, span := c.Tracer.Start(ctx, "ping.received", trace.WithSpanKind(trace.SpanKindConsumer))
 	defer span.End()
-
-	err := json.Unmarshal(b.Payload(), &msg)
-	if err != nil {
-		span.RecordError(err)
-		span.SetStatus(codes.Error, err.Error())
-
-		c.Logger.Fatal("cannot marshal message", zap.Error(err))
-	}
 
 	if id, has := msg.Headers["id"]; has {
 		if value, has := msg.Headers["start"]; has {
@@ -180,7 +179,7 @@ func (c *Client) Ping(ctx context.Context, id int) error {
 		span.RecordError(err)
 		span.SetStatus(codes.Error, err.Error())
 
-		c.Logger.Fatal("cannot marshal message", zap.Error(err))
+		return fmt.Errorf("failed to marshal message: %w", err)
 	}
 
 	if token := c.Client.Publish(PingTopic, byte(c.QoS), c.Retained, b); token.Wait() && token.Error() != nil {
