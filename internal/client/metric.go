@@ -67,6 +67,7 @@ func NewMetrics() Metrics {
 			Subsystem:   Subsystem,
 			Name:        "connection_errors_total",
 			Help:        "total number of connection errors",
+			Unit:        "",
 			ConstLabels: nil,
 		}),
 		PublishErrors: newCounter(prometheus.CounterOpts{
@@ -74,6 +75,7 @@ func NewMetrics() Metrics {
 			Subsystem:   Subsystem,
 			Name:        "publish_errors_total",
 			Help:        "total number of publish errors",
+			Unit:        "",
 			ConstLabels: nil,
 		}),
 		Pings: newCounter(prometheus.CounterOpts{
@@ -81,6 +83,7 @@ func NewMetrics() Metrics {
 			Subsystem:   Subsystem,
 			Name:        "pings_total",
 			Help:        "total number of published pings",
+			Unit:        "",
 			ConstLabels: nil,
 		}),
 		Pongs: newCounter(prometheus.CounterOpts{
@@ -88,6 +91,7 @@ func NewMetrics() Metrics {
 			Subsystem:   Subsystem,
 			Name:        "pongs_total",
 			Help:        "total number of received pongs",
+			Unit:        "",
 			ConstLabels: nil,
 		}),
 		// nolint: exhaustruct

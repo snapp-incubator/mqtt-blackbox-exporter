@@ -13,3 +13,6 @@ linters:
     - revive
     - wrapcheck
     - gosec
+    # superseded by wsl_v5 and gomodguard_v2, both already on via `default: all`
+    - wsl
+    - gomodguard
