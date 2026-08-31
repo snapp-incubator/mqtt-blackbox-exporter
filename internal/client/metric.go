@@ -94,7 +94,7 @@ func NewMetrics() Metrics {
 			Unit:        "",
 			ConstLabels: nil,
 		}),
-		// nolint: exhaustruct
+		// nolint: exhaustruct_v5
 		PingDuration: newHistogram(prometheus.HistogramOpts{
 			Namespace:   Namespace,
 			Subsystem:   Subsystem,

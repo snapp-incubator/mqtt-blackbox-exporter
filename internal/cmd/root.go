@@ -23,7 +23,7 @@ func Execute() {
 	tracer := trace.New(cfg.Telemetry.Trace)
 	metric.NewServer(cfg.Telemetry.Metric).Start(logger.Named("metric"))
 
-	// nolint: exhaustruct
+	// nolint: exhaustruct_v5
 	root := &cobra.Command{
 		Use:   "mqtt-blackbox-exporter",
 		Short: "ping pong with mqtt broker",
