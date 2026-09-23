@@ -20,7 +20,7 @@ COPY . .
 WORKDIR /app/cmd/mqtt-blackbox-exporter
 RUN go build -o /mqtt-blackbox-exporter
 
-FROM alpine:3.23
+FROM alpine:3.24
 
 WORKDIR /app/
 
