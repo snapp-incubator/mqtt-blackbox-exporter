@@ -6,7 +6,7 @@ require (
 	github.com/eclipse/paho.mqtt.golang v1.5.1
 	github.com/knadh/koanf v1.5.0
 	github.com/knadh/koanf/v2 v2.3.7
-	github.com/prometheus/client_golang v1.24.1
+	github.com/prometheus/client_golang v1.25.0
 	github.com/spf13/cobra v1.10.2
 	github.com/tidwall/pretty v1.2.2
 	go.opentelemetry.io/otel v1.47.0
